@@ -66,7 +66,7 @@ public class SurveyController {
         survey.setAnon(survey.getAnon()!=null?0:1);
         int result = surveyService.update(survey);
         if(result<=0){
-            //失败的情况下
+         
             return MapControl.getInstance().error().getMap();
         }
         return MapControl.getInstance().success().getMap();
@@ -153,7 +153,7 @@ public class SurveyController {
         String uuid = "/dy/"+UUID.randomUUID().toString();
         Survey survey = new Survey();
         survey.setId(id);
-        //http://localhost:8080/survey/ieieas-asdf-asdf-3-asd-f-asdf
+        
         String url = "http://"+request.getServerName()+ ":" + request.getServerPort() + request.getContextPath()+uuid;
         survey.setUrl(url);
         surveyService.update(survey);
