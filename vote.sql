@@ -1,7 +1,3 @@
-/*==============================================================*/
-/* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2021/3/12 22:04:40                           */
-/*==============================================================*/
 
 
 drop table if exists tb_admin;
@@ -68,11 +64,11 @@ create table tb_question
    title                varchar(200),
    remark               varchar(200),
    type                 int(1) comment '1radio|2checkbox|3text|4textarea',
-   required             int(1) comment '0·Ç±ØÌî1±ØÌî',
+   required             int(1) comment '0éå¿…å¡«1å¿…å¡«',
    check_style          varchar(50) comment 'text;number;date',
-   order_style          int(1) comment '0Ë³Ğò1Ëæ»ú',
+   order_style          int(1) comment '0é¡ºåº1éšæœº',
    show_style           int(1) comment '1;2;3;4',
-   test                 int(1) comment '0²»²âÆÀ1²âÆÀ',
+   test                 int(1) comment '0ä¸æµ‹è¯„1æµ‹è¯„',
    score                int(3),
    orderby              int(11),
    creator              int(11),
@@ -92,7 +88,7 @@ create table tb_question_opt
    type                 varchar(20) comment '1radio|2checkbox',
    opt                  varchar(200),
    orderby              int(11),
-   answer               int(1) comment 'Ä¬ÈÏÎªNULL£»1´ğ°¸',
+   answer               int(1) comment 'é»˜è®¤ä¸ºNULLï¼›1ç­”æ¡ˆ',
    primary key (id)
 );
 
@@ -104,16 +100,16 @@ create table tb_survey
    ID                   int(11) not null auto_increment,
    title                varchar(100),
    remark               varchar(200),
-   bounds               int(1) comment '0:²»ÏŞÖÆ;1:ÏŞÖÆ',
+   bounds               int(1) comment '0:ä¸é™åˆ¶;1:é™åˆ¶',
    start_time           datetime,
    end_time             datetime,
-   rules                int(1) comment '0¹«¿ª;1ÃÜÂë',
+   rules                int(1) comment '0å…¬å¼€;1å¯†ç ',
    password             varchar(50),
    url                  varchar(200),
-   state                varchar(50) comment '´´½¨¡¢Ö´ĞĞÖĞ¡¢½áÊø',
+   state                varchar(50) comment 'åˆ›å»ºã€æ‰§è¡Œä¸­ã€ç»“æŸ',
    logo                 varchar(200),
    bgimg                varchar(200),
-   anon                 int(1) comment '0ÄäÃû£»1²»ÄäÃû',
+   anon                 int(1) comment '0åŒ¿åï¼›1ä¸åŒ¿å',
    creator              int(11),
    create_time          datetime,
    primary key (ID)
