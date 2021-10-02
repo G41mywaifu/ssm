@@ -1,5 +1,6 @@
 package com.cao.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.cao.entity.*;
 import com.cao.service.QuestionService;
 import com.cao.service.SurveyService;
@@ -15,13 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
 @RequestMapping("/survey")
-
 public class SurveyController {
 
     @Autowired
@@ -43,7 +41,6 @@ public class SurveyController {
         survey.setAnon(survey.getAnon()!=null?0:1);
         int result = surveyService.create(survey);
         if(result<=0){
-            //失败的情况下
             return MapControl.getInstance().error().getMap();
         }
         return MapControl.getInstance().success().getMap();
@@ -66,7 +63,7 @@ public class SurveyController {
         survey.setAnon(survey.getAnon()!=null?0:1);
         int result = surveyService.update(survey);
         if(result<=0){
-         
+            //失败的情况下
             return MapControl.getInstance().error().getMap();
         }
         return MapControl.getInstance().success().getMap();
@@ -79,7 +76,14 @@ public class SurveyController {
 
     @PostMapping("/query")
     @ResponseBody
-    public Map<String,Object> query(@RequestBody Survey survey, ModelMap modelMap){
+    public Map<String,Object> query(@RequestBody Survey survey,HttpServletRequest request, ModelMap modelMap){
+
+
+        Admin admin = SessionUtils.getAdmin(request);
+        if(admin.getType() == 1){//非管理人员仅能看到自己的
+            survey.setCreator(admin.getId());
+        }
+
         List<Survey> list = surveyService.query(survey);
         //创建者信息写入survey对象
         for (Survey entity : list) {
@@ -153,7 +157,7 @@ public class SurveyController {
         String uuid = "/dy/"+UUID.randomUUID().toString();
         Survey survey = new Survey();
         survey.setId(id);
-        
+        //http://localhost:8080/survey/ieieas-asdf-asdf-3-asd-f-asdf
         String url = "http://"+request.getServerName()+ ":" + request.getServerPort() + request.getContextPath()+uuid;
         survey.setUrl(url);
         surveyService.update(survey);
@@ -206,8 +210,6 @@ public class SurveyController {
         List<Question> questions = questionService.query(question);
         //将问题设置为survey的属性
         survey.setQuestions(questions);
-
-
         //总投票人数
         AnswerOpt answerOpt = new AnswerOpt();
         answerOpt.setSurveyId(id);
@@ -221,13 +223,28 @@ public class SurveyController {
             for (QuestionOpt questionOpt : question1.getOptions()) {
                 int num = 0;
                 for (AnswerOpt opt : answerOpts) {
-                    if(questionOpt.getId() == opt.getOptId()){
+                    if(questionOpt.getId() == opt.getOptId().intValue()){
                         num++;
                     }
                 }
                 questionOpt.setNum(num);
             }
         }
+
+        ////////////////
+        AnswerTxt answerTxt = new AnswerTxt();
+        answerTxt.setSurveyId(id);
+        List<AnswerTxt> answerTxts= surveyService.queryAnswerTxT(answerTxt);
+        //Set<String> set2 = new HashSet<String>();
+        String set2="";
+        for (AnswerTxt opt : answerTxts) {
+
+            set2+=opt.getResult()+",\n";
+        }
+
+
+        /////////////////
+        modelMap.addAttribute("res",set2);
         modelMap.addAttribute("survey",survey);
         modelMap.addAttribute("total",set.size());
         return "survey/query_detail";
@@ -248,6 +265,20 @@ public class SurveyController {
             return null;
         }
     }
+
+    @GetMapping("/my")
+    public String my(){
+        return  "survey/my";
+    }
+
+    @PostMapping("/my_query")
+    @ResponseBody
+    public Map<String,Object> my_query(@RequestBody Survey survey, ModelMap modelMap){
+        PageInfo<Survey> pageInfo = surveyService.queryMySurvey(survey);
+        Integer count = surveyService.count(survey);
+        return MapControl.getInstance().page(pageInfo.getList(),Integer.parseInt(pageInfo.getTotal()+"")).getMap();
+    }
+
 
 
 
