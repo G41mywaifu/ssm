@@ -1,2 +1,2 @@
 # ssm-
-ssm投票系统
+ssm和maven的在线投票系统
